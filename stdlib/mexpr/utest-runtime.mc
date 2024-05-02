@@ -7,8 +7,9 @@ let numFailed = ref 0
 let numPassed = ref 0
 
 let utestTestPassed : () -> () = lam.
-  modref numPassed (addi (deref numPassed) 1);
-  print "."
+  ()
+  -- modref numPassed (addi (deref numPassed) 1);
+  -- print "."
 
 let utestTestFailed : String -> String -> String -> () =
   lam info. lam usingstr. lam onfailStr.

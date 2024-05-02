@@ -201,19 +201,19 @@ let formatHighlights
     work "" false sections
 
 let terminalHighlightAddedConfig: HighlightConfig =
-  { beforeSection = lam str. concat "[0m" str
-  , afterSection = lam str. concat "[0m" str
-  , irrelevant = lam str. concat "[0m" str
-  , relevant = lam str. concat (concat "[37m" str) "[0m"
-  , added = lam str. concat (concat "[31m" str) "[0m"
+  { beforeSection = lam str. concat "" str
+  , afterSection = lam str. concat "" str
+  , irrelevant = lam str. concat "" str
+  , relevant = lam str. concat (concat "" str) ""
+  , added = lam str. concat (concat "" str) ""
   }
 
 let terminalHighlightErrorConfig: HighlightConfig =
-  { beforeSection = lam str. concat "[0m" str
-  , afterSection = lam str. concat "[0m" str
-  , irrelevant = lam str. concat "[0m" str
-  , relevant = lam str. concat (concat "[31m" str) "[0m"
-  , added = lam str. concat (concat "[31m" str) "[0m"
+  { beforeSection = lam str. concat "" str
+  , afterSection = lam str. concat "" str
+  , irrelevant = lam str. concat "" str
+  , relevant = lam str. concat (concat "" str) ""
+  , added = lam str. concat (concat "" str) ""
   }
 
 type ErrorSection = {msg : String, multi : String, info : Info, infos : [Info]}
