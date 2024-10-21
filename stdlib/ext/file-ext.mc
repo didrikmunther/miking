@@ -1,6 +1,7 @@
 
 include "option.mc"
 include "seq.mc"
+include "string.mc"
 
 type WriteChannel
 type ReadChannel
@@ -60,14 +61,13 @@ let readLine : ReadChannel -> Option String =
 -- If the number of remaining bytes is smaller than `len`, 
 -- all remaining bytes are returned. Subsequent calls to `readBytes`
 -- will return `None`.
-external readBytes ! : ReadChannel -> Int -> (String, Int, Bool, Bool)
--- returns: Option (content, length of content)
-let readBytes : ReadChannel -> Int -> Option (String, Int) = 
+external readBytes ! : ReadChannel -> Int -> (String, Bool, Bool)
+let readBytes : ReadChannel -> Int -> Option String = 
   lam rc. lam len. switch readBytes rc len
-    -- tuple: (Content, length of content, reached EOF, had error)
-    case ("", 0, true, _) then None () -- EOF
-    case (s, l, _, false) then Some (s, l) -- Success
-    case (_, _, _, _) then None () -- Error
+    -- tuple: (Content, reached EOF, had error)
+    case ("", true, _) then None () -- EOF
+    case (s, _, false) then Some s -- Success
+    case (_, _, _) then None () -- Error
   end
 
 -- returns Option content if the requested number of bytes could be read
@@ -75,10 +75,11 @@ let readBytes : ReadChannel -> Int -> Option (String, Int) =
 recursive
   let readBytesBuffered : ReadChannel -> Int -> Option String =
     lam rc. lam len. switch readBytes rc len
-      case Some (s, l) then (
-        if eqi l len then Some s
-        else match readBytesBuffered rc (subi len l)
-          with Some s2 then (join [s, s2])
+      case Some s then (
+        let actual_length = length s in
+        if eqi actual_length len then Some s
+        else match readBytesBuffered rc (subi len actual_length)
+          with Some s2 then Some (join [s, s2])
           else None ()
       )
       case None () then None ()
@@ -135,6 +136,14 @@ utest
     (l1,l2,l3,l4)
   else ("Error reading file","","","")
 with ("Hello", "Next string", "Final", "EOF") in
+
+utest
+  match readOpen filename with Some rc then
+    (readBytes rc 1);
+    readClose rc;
+    ()
+  else ()
+with () in
 
 -- Test reading x amount of characters from the file
 (match readOpen filename with Some rc then
