@@ -70,6 +70,12 @@ let fileReadBytes : ReadChannel -> Int -> Option [Int] =
       case _ then None ()
     end
 
+external externalHasBytesToRead ! : ReadChannel -> Bool
+let fileHasBytesToRead: ReadChannel -> Bool = lam rc. externalHasBytesToRead rc
+
+external externalExecuteCommand ! : String -> (String, String, Int)
+let executeCommand = lam path. externalExecuteCommand path
+
 -- Reads everything in a file and returns the content as a string.
 -- Should support Unicode in the future.
 external externalReadString ! : ReadChannel -> String

@@ -70,8 +70,68 @@ let fileExtMap =
       }
     ]),
     ("externalReadBytes", [
-      { expr = "(fun rc len -> try let buf = Bytes.create len in let actual_len = input rc buf 0 len in let reached_eof = actual_len < len in let had_error = false in let int_list = List.init actual_len (fun i -> int_of_char (Bytes.get buf i)) in (int_list, reached_eof, had_error) with | Sys_error err -> ([], false, true))",
+      { expr = "
+          (fun rc len ->
+            try
+              let buf = Bytes.create len in
+              let actual_len = input rc buf 0 len in
+              let reached_eof = actual_len < len in
+              let had_error = false in
+              let int_list = List.init actual_len (
+                fun i -> int_of_char (Bytes.get buf i)
+              ) in
+              (int_list, reached_eof, had_error)
+            with
+              | Sys_error err -> ([], false, true)
+          )
+        ",
         ty = tyarrows_ [otyvarext_ "in_channel" [], tyint_, otytuple_ [otylist_ tyint_, tybool_, tybool_]],
+        libraries = [],
+        cLibraries = []
+      }
+    ]),
+    ("externalHasBytesToRead", [
+      { expr = "
+          (fun rc ->
+            let fd = Unix.descr_of_in_channel rc in
+            let (readable, _, _) = Unix.select [fd] [] [] 0.0 in
+            readable <> []
+          )
+        ",
+        ty = tyarrows_ [otyvarext_ "in_channel" [], tybool_],
+        libraries = [],
+        cLibraries = []
+      }
+    ]),
+    ("externalExecuteCommand", [
+      { expr = "
+        (
+          fun path ->
+            (* Run the command and get channels for stdout and stderr *)
+            let in_channel, out_channel, err_channel = Unix.open_process_full path (Unix.environment ()) in
+          
+            (* Read the entire stdout *)
+            let rec read_channel chan acc =
+              match input_line chan with
+              | line -> read_channel chan (acc ^ line ^ \"\n\")
+              | exception End_of_file -> acc
+            in
+            let stdout_output = read_channel in_channel \"\" in
+            let stderr_output = read_channel err_channel \"\" in
+          
+            (* Close the channels and get the exit status *)
+            let process_status = Unix.close_process_full (in_channel, out_channel, err_channel) in
+
+            let status = match process_status with
+              | Unix.WEXITED i -> i
+              | Unix.WSIGNALED i -> -i
+              | Unix.WSTOPPED i -> -i
+            in
+
+            (stdout_output, stderr_output, status)
+        )
+      ",
+        ty = tyarrows_ [otystring_, otytuple_ [otystring_, otystring_, tyint_]],
         libraries = [],
         cLibraries = []
       }

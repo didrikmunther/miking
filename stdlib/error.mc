@@ -202,20 +202,36 @@ let formatHighlights
     in
     work "" false sections
 
+-- let terminalHighlightAddedConfig: HighlightConfig =
+--   { beforeSection = lam str. concat "[0m" str
+--   , afterSection = lam str. concat "[0m" str
+--   , irrelevant = lam str. concat "[0m" str
+--   , relevant = lam str. concat (concat "[37m" str) "[0m"
+--   , added = lam str. concat (concat "[31m" str) "[0m"
+--   }
+
 let terminalHighlightAddedConfig: HighlightConfig =
-  { beforeSection = lam str. concat "[0m" str
-  , afterSection = lam str. concat "[0m" str
-  , irrelevant = lam str. concat "[0m" str
-  , relevant = lam str. concat (concat "[37m" str) "[0m"
-  , added = lam str. concat (concat "[31m" str) "[0m"
+  { beforeSection = lam str. str
+  , afterSection = lam str. str
+  , irrelevant = lam str. str
+  , relevant = lam str. str
+  , added = lam str. str
   }
 
+-- let terminalHighlightErrorConfig: HighlightConfig =
+--   { beforeSection = lam str. concat "[0m" str
+--   , afterSection = lam str. concat "[0m" str
+--   , irrelevant = lam str. concat "[0m" str
+--   , relevant = lam str. concat (concat "[31m" str) "[0m"
+--   , added = lam str. concat (concat "[31m" str) "[0m"
+--   }
+
 let terminalHighlightErrorConfig: HighlightConfig =
-  { beforeSection = lam str. concat "[0m" str
-  , afterSection = lam str. concat "[0m" str
-  , irrelevant = lam str. concat "[0m" str
-  , relevant = lam str. concat (concat "[31m" str) "[0m"
-  , added = lam str. concat (concat "[31m" str) "[0m"
+  { beforeSection = lam str. str
+  , afterSection = lam str. str
+  , irrelevant = lam str. str
+  , relevant = lam str. str
+  , added = lam str. str
   }
 
 type ErrorSection = {msg : String, multi : String, info : Info, infos : [Info]}

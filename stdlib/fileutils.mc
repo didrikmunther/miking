@@ -38,7 +38,8 @@ let parseMCoreLibsEnv : () -> Map String String = lam.
   match sysGetEnv "MCORE_LIBS" with Some s then
     parseMCoreLibs s
   else
-    error "Environment variable $MCORE_LIBS is not set!"
+    -- error "Environment variable $MCORE_LIBS is not set!"
+    mapEmpty cmpString
 
 let addCWDtoLibs : Map String String -> Map String String = lam libs. 
   mapInsert "cwd" (sysGetCwd ()) libs

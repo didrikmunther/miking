@@ -308,7 +308,8 @@ lang UnifyPure = Unify + MetaVarTypeAst + VarTypeSubstitute
       empty = result.ok [],
       combine = result.map2 concat,
       unify = lam env. lam ty1. lam ty2. result.ok [(env, ty1, ty2)],
-      err = result.err
+      err = result.err,
+      unifyRepr = lam env. lam r1. lam r2. result.ok []
     }
     in
     recursive let work = lam acc. lam unifier.
